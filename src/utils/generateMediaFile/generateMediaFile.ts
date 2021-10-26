@@ -22,15 +22,15 @@ export function generateMediaFile(params: {
     }
 
     writeImports({
-        "mediaPath": join(__dirname, mediaPath),
-        "generatedFilePath": join(__dirname, generatedFilePath),
+        "mediaPath": mediaPath,
+        "generatedFilePath": generatedFilePath,
         tree,
         acceptedFileExtensions,
     });
 
     writeExport({
         tree,
-        "generatedFilePath": join(__dirname, generatedFilePath),
+        "generatedFilePath": generatedFilePath,
         acceptedFileExtensions,
     });
 }
