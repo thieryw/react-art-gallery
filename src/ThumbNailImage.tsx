@@ -4,10 +4,12 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { useImageLazyLoad } from "./utils/useImageLazyLoad";
 
 export type ImageProps = {
+    className?: string;
     url: string;
-    name: string;
+    name?: string;
     imageAverageHeight?: number;
     onClick: () => void;
+    hideImageName: boolean;
 };
 
 const useStyles = makeStyles<{
@@ -62,16 +64,10 @@ const useStyles = makeStyles<{
 }));
 
 export const ThumbNailImage = memo((props: ImageProps) => {
-    const { name, url, imageAverageHeight, onClick } = props;
+    const { name, url, imageAverageHeight, onClick, className, hideImageName } = props;
     const imageWrapperRef = useRef<HTMLDivElement>(null);
     const [isImgDimReset, setIsImgDimReset] = useState(false);
     const [imageOpacity, setImageOpacity] = useState(0);
-
-    const { classes } = useStyles({
-        isImgDimReset,
-        imageOpacity,
-        imageAverageHeight,
-    });
 
     const { imageRef } = useImageLazyLoad({ "imageUrl": url });
 
@@ -87,8 +83,14 @@ export const ThumbNailImage = memo((props: ImageProps) => {
         setImageOpacity(1);
     });
 
+    const { classes, cx } = useStyles({
+        isImgDimReset,
+        imageOpacity,
+        imageAverageHeight,
+    });
+
     return (
-        <div ref={imageWrapperRef} className={classes.root}>
+        <div ref={imageWrapperRef} className={cx(classes.root, className)}>
             <img
                 onLoad={onLoad}
                 ref={imageRef}
@@ -98,7 +100,9 @@ export const ThumbNailImage = memo((props: ImageProps) => {
                 alt={name}
             />
             <div onClick={onClick} className={classes.caption}>
-                <p className={classes.captionParagraph}>{name}</p>
+                {name !== undefined && !hideImageName && (
+                    <p className={classes.captionParagraph}>{name}</p>
+                )}
             </div>
         </div>
     );

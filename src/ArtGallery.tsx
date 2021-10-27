@@ -7,9 +7,15 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
 
 export type ArtGalleryProps = {
+    className?: string;
+    classes?: {
+        thumbNailImage?: string;
+        lightBox?: string;
+    };
     thumbNailImages: Pick<ImageProps, "name" | "url">[];
     lightBoxImages: Pick<ImageProps, "url">[];
     imageAverageHeight?: number;
+    hideImageNames?: boolean;
 };
 
 const useStyles = makeStyles()({
@@ -21,12 +27,19 @@ const useStyles = makeStyles()({
 });
 
 export const ArtGallery = memo((props: ArtGalleryProps) => {
-    const { thumbNailImages, imageAverageHeight, lightBoxImages } = props;
+    const {
+        thumbNailImages,
+        imageAverageHeight,
+        lightBoxImages,
+        className,
+        classes: classesProp,
+        hideImageNames,
+    } = props;
     const [openingLightBoxImgIndex, setOpeningLightBoxImgIndex] = useState<number | undefined>(
         undefined,
     );
 
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
 
     const onClickFactory = useCallbackFactory(([index]: [number]) => {
         setOpeningLightBoxImgIndex(index);
@@ -37,7 +50,7 @@ export const ArtGallery = memo((props: ArtGalleryProps) => {
     });
 
     return (
-        <div className={classes.root}>
+        <div className={cx(classes.root, className)}>
             {thumbNailImages.map(({ url, name }, index) => (
                 <ThumbNailImage
                     url={url}
@@ -45,6 +58,8 @@ export const ArtGallery = memo((props: ArtGalleryProps) => {
                     imageAverageHeight={imageAverageHeight}
                     key={url}
                     onClick={onClickFactory(index)}
+                    className={classesProp?.thumbNailImage}
+                    hideImageName={hideImageNames ?? false}
                 />
             ))}
 
@@ -52,6 +67,7 @@ export const ArtGallery = memo((props: ArtGalleryProps) => {
                 imageUrls={lightBoxImages.map(({ url }) => url)}
                 openingImageIndex={openingLightBoxImgIndex}
                 closeLightBox={closeLightBox}
+                className={classesProp?.lightBox}
             />
         </div>
     );

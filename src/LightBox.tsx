@@ -12,10 +12,12 @@ type LightBoxProps = {
     imageUrls: string[];
     openingImageIndex: number | undefined;
     closeLightBox: () => void;
+    className?: string;
 };
 
 const useStyles = makeStyles<{ isDisplayed: boolean }>()((...[, { isDisplayed }]) => ({
     "root": {
+        "zIndex": 4000,
         "display": "flex",
         "justifyContent": "space-between",
         "alignItems": "center",
@@ -23,7 +25,7 @@ const useStyles = makeStyles<{ isDisplayed: boolean }>()((...[, { isDisplayed }]
         "position": "fixed",
         "top": 0,
         "left": 0,
-        "backgroundColor": "rgba(0,0,0, 0.8)",
+        "backgroundColor": "rgba(0,0,0, 0.92)",
         "width": "100vw",
         "height": "100vh",
         "padding": 40,
@@ -38,14 +40,30 @@ const useStyles = makeStyles<{ isDisplayed: boolean }>()((...[, { isDisplayed }]
         "minWidth": 30,
         "maxWidth": 50,
         "fill": "white",
+        "transition": "transform 500ms",
+        ":hover": {
+            "transform": "scale(1.2)",
+            "cursor": "pointer",
+        },
     },
 
     "prevButton": {
-        "transform": "rotate(180deg)",
         "marginRight": 50,
+        "transform": "rotate(180deg)",
+        "position": "relative",
+        ":hover": {
+            "transform": "scale(1.2) rotate(180deg)",
+        },
+        "@media (max-width: 600px)": {
+            "right": 30,
+        },
     },
     "nextButton": {
         "marginLeft": 50,
+        "position": "relative",
+        "@media (max-width: 600px)": {
+            "left": 30,
+        },
     },
     "closeButton": {
         "position": "absolute",
@@ -69,15 +87,16 @@ const useStyles = makeStyles<{ isDisplayed: boolean }>()((...[, { isDisplayed }]
 }));
 
 export const LightBox = memo((props: LightBoxProps) => {
-    const { imageUrls, openingImageIndex, closeLightBox } = props;
+    const { imageUrls, openingImageIndex, closeLightBox, className } = props;
     const [currentIndex, setCurrentIndex] = useState<number | undefined>(undefined);
     const lightBoxRef = useRef<HTMLDivElement>(null);
     const loadedImageIndexes = useMemo<number[]>(() => [], []);
 
     useEffect(() => {
-        if (openingImageIndex === undefined) {
+        if (openingImageIndex === undefined || !lightBoxRef.current) {
             return;
         }
+        lightBoxRef.current.focus();
 
         if (!loadedImageIndexes.includes(openingImageIndex)) {
             loadedImageIndexes.push(openingImageIndex);
@@ -169,14 +188,6 @@ export const LightBox = memo((props: LightBoxProps) => {
         }
     });
 
-    const onLoad = useConstCallback(() => {
-        if (!lightBoxRef.current) {
-            return;
-        }
-
-        lightBoxRef.current.focus();
-    });
-
     const { classes, cx } = useStyles({
         "isDisplayed": openingImageIndex !== undefined,
     });
@@ -185,8 +196,7 @@ export const LightBox = memo((props: LightBoxProps) => {
         <div
             tabIndex={0}
             onKeyDown={keyboardNavigate}
-            className={classes.root}
-            onLoad={onLoad}
+            className={cx(classes.root, className)}
             ref={lightBoxRef}
         >
             <ReactSVG
