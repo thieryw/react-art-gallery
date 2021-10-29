@@ -1,10 +1,10 @@
-import { writeImports } from "./writeImports";
-import { writeExport } from "./writeExport";
-import { existsSync, writeFileSync } from "fs";
+import { existsSync, writeFileSync, appendFileSync } from "fs";
 import { join } from "path";
 import { generatedFileName } from "./generatedFileName";
-import { crawl } from "./crawl";
+import { crawl } from "../crawl";
 import { sortFileArraysNumerically } from "./sortFileArraysNumerically";
+import { generateImportArray } from "./generateImportArray";
+import { generateExportString } from "./generateExportString";
 
 export function generateMediaFile(params: {
     generatedFilePath: string;
@@ -12,7 +12,7 @@ export function generateMediaFile(params: {
     acceptedFileExtensions: string[];
 }) {
     const { generatedFilePath, mediaPath, acceptedFileExtensions } = params;
-    const tree = crawl({ mediaPath });
+    const tree = crawl({ "path": mediaPath });
     const generatedFileCompletePath = join(generatedFilePath.toString(), `${generatedFileName}.ts`);
 
     sortFileArraysNumerically({ tree });
@@ -21,16 +21,21 @@ export function generateMediaFile(params: {
         writeFileSync(generatedFileCompletePath, "");
     }
 
-    writeImports({
+    const imports = generateImportArray({
         "mediaPath": mediaPath,
         "generatedFilePath": generatedFilePath,
         tree,
         acceptedFileExtensions,
     });
 
-    writeExport({
+    imports.forEach(stringImport => {
+        appendFileSync(join(generatedFilePath, `${generatedFileName}.ts`), `${stringImport}\n`);
+    });
+
+    const exports = generateExportString({
         tree,
-        "generatedFilePath": generatedFilePath,
         acceptedFileExtensions,
     });
+
+    appendFileSync(join(generatedFilePath, `${generatedFileName}.ts`), exports);
 }

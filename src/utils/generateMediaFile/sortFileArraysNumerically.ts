@@ -1,4 +1,4 @@
-import type { Tree } from "./crawl";
+import type { Tree } from "../crawl";
 
 function extractNumberFromStringBeginning(str: string) {
     return parseInt((str.match(/^\d+/g) ?? "")[0] ?? 0);
