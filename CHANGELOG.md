@@ -1,3 +1,8 @@
+### **0.0.5** (2021-10-29)  
+  
+- bump verion  
+- update export medias scripts and create image converter    
+  
 ### **0.0.4** (2021-10-27)  
   
 - bump version  
