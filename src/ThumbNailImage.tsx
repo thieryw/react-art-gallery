@@ -3,14 +3,69 @@ import { memo, useState, useRef } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useImageLazyLoad } from "./utils/useImageLazyLoad";
 
-export type ImageProps = {
+export type ThumbNailImageProps = {
     className?: string;
     url: string;
+    sources?: {
+        srcSet: string;
+        type: string;
+    }[];
     name?: string;
     imageAverageHeight?: number;
     onClick: () => void;
     hideImageName: boolean;
 };
+
+export const ThumbNailImage = memo((props: ThumbNailImageProps) => {
+    const { name, url, imageAverageHeight, onClick, className, hideImageName, sources } = props;
+
+    const imageWrapperRef = useRef<HTMLDivElement>(null);
+    const [isImgDimReset, setIsImgDimReset] = useState(false);
+    const [imageOpacity, setImageOpacity] = useState(0);
+
+    const { imageRef } = useImageLazyLoad({ "imageUrl": url });
+
+    const onLoad = useConstCallback(() => {
+        if (!imageRef.current || !imageWrapperRef.current) {
+            return;
+        }
+
+        const wrapperStyle = imageWrapperRef.current.style;
+        wrapperStyle.width = `${imageRef.current.clientWidth}px`;
+
+        setIsImgDimReset(true);
+        setImageOpacity(1);
+    });
+
+    const { classes, cx } = useStyles({
+        isImgDimReset,
+        imageOpacity,
+        imageAverageHeight,
+    });
+
+    return (
+        <div ref={imageWrapperRef} className={cx(classes.root, className)}>
+            <picture>
+                {sources !== undefined &&
+                    sources.map((source, index) => <source key={index} {...source} />)}
+
+                <img
+                    onLoad={onLoad}
+                    ref={imageRef}
+                    className={classes.image}
+                    width="300"
+                    height="200"
+                    alt={name}
+                />
+            </picture>
+            <div onClick={onClick} className={classes.caption}>
+                {name !== undefined && !hideImageName && (
+                    <p className={classes.captionParagraph}>{name}</p>
+                )}
+            </div>
+        </div>
+    );
+});
 
 const useStyles = makeStyles<{
     isImgDimReset: boolean;
@@ -62,48 +117,3 @@ const useStyles = makeStyles<{
         "textAlign": "center",
     },
 }));
-
-export const ThumbNailImage = memo((props: ImageProps) => {
-    const { name, url, imageAverageHeight, onClick, className, hideImageName } = props;
-    const imageWrapperRef = useRef<HTMLDivElement>(null);
-    const [isImgDimReset, setIsImgDimReset] = useState(false);
-    const [imageOpacity, setImageOpacity] = useState(0);
-
-    const { imageRef } = useImageLazyLoad({ "imageUrl": url });
-
-    const onLoad = useConstCallback(() => {
-        if (!imageRef.current || !imageWrapperRef.current) {
-            return;
-        }
-
-        const wrapperStyle = imageWrapperRef.current.style;
-        wrapperStyle.width = `${imageRef.current.clientWidth}px`;
-
-        setIsImgDimReset(true);
-        setImageOpacity(1);
-    });
-
-    const { classes, cx } = useStyles({
-        isImgDimReset,
-        imageOpacity,
-        imageAverageHeight,
-    });
-
-    return (
-        <div ref={imageWrapperRef} className={cx(classes.root, className)}>
-            <img
-                onLoad={onLoad}
-                ref={imageRef}
-                className={classes.image}
-                width="300"
-                height="200"
-                alt={name}
-            />
-            <div onClick={onClick} className={classes.caption}>
-                {name !== undefined && !hideImageName && (
-                    <p className={classes.captionParagraph}>{name}</p>
-                )}
-            </div>
-        </div>
-    );
-});

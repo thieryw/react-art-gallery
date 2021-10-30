@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import { makeStyles } from "./theme";
 import { ThumbNailImage } from "./ThumbNailImage";
-import type { ImageProps } from "./ThumbNailImage";
+import type { ThumbNailImageProps } from "./ThumbNailImage";
 import { LightBox } from "./LightBox";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -12,8 +12,10 @@ export type ArtGalleryProps = {
         thumbNailImage?: string;
         lightBox?: string;
     };
-    thumbNailImages: Pick<ImageProps, "name" | "url">[];
-    lightBoxImages: Pick<ImageProps, "url">[];
+    thumbNailImages: Pick<ThumbNailImageProps, "name" | "url">[];
+    thumbNailImageSources?: ThumbNailImageProps["sources"][];
+    lightBoxImageSources?: ThumbNailImageProps["sources"][];
+    lightBoxImages: Pick<ThumbNailImageProps, "url">[];
     imageAverageHeight?: number;
     hideImageNames?: boolean;
 };
@@ -34,6 +36,8 @@ export const ArtGallery = memo((props: ArtGalleryProps) => {
         className,
         classes: classesProp,
         hideImageNames,
+        thumbNailImageSources,
+        lightBoxImageSources,
     } = props;
     const [openingLightBoxImgIndex, setOpeningLightBoxImgIndex] = useState<number | undefined>(
         undefined,
@@ -49,6 +53,8 @@ export const ArtGallery = memo((props: ArtGalleryProps) => {
         setOpeningLightBoxImgIndex(undefined);
     });
 
+    console.log(thumbNailImageSources);
+
     return (
         <div className={cx(classes.root, className)}>
             {thumbNailImages.map(({ url, name }, index) => (
@@ -60,11 +66,15 @@ export const ArtGallery = memo((props: ArtGalleryProps) => {
                     onClick={onClickFactory(index)}
                     className={classesProp?.thumbNailImage}
                     hideImageName={hideImageNames ?? false}
+                    sources={
+                        thumbNailImageSources !== undefined ? thumbNailImageSources[index] : undefined
+                    }
                 />
             ))}
 
             <LightBox
                 imageUrls={lightBoxImages.map(({ url }) => url)}
+                imageSources={lightBoxImageSources}
                 openingImageIndex={openingLightBoxImgIndex}
                 closeLightBox={closeLightBox}
                 className={classesProp?.lightBox}
