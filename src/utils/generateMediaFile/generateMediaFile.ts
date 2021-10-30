@@ -1,6 +1,5 @@
 import { existsSync, writeFileSync, appendFileSync } from "fs";
 import { join } from "path";
-import { generatedFileName } from "./generatedFileName";
 import { crawl } from "../crawl";
 import { sortFileArraysNumerically } from "./sortFileArraysNumerically";
 import { generateImportArray } from "./generateImportArray";
@@ -10,8 +9,9 @@ export function generateMediaFile(params: {
     generatedFilePath: string;
     mediaPath: string;
     acceptedFileExtensions: string[];
+    generatedFileName: string;
 }) {
-    const { generatedFilePath, mediaPath, acceptedFileExtensions } = params;
+    const { generatedFilePath, mediaPath, acceptedFileExtensions, generatedFileName } = params;
     const tree = crawl({ "path": mediaPath });
     const generatedFileCompletePath = join(generatedFilePath.toString(), `${generatedFileName}.ts`);
 
