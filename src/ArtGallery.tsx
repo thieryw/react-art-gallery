@@ -53,8 +53,6 @@ export const ArtGallery = memo((props: ArtGalleryProps) => {
         setOpeningLightBoxImgIndex(undefined);
     });
 
-    console.log(thumbNailImageSources);
-
     return (
         <div className={cx(classes.root, className)}>
             {thumbNailImages.map(({ url, name }, index) => (
