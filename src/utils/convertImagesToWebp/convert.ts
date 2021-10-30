@@ -19,7 +19,7 @@ export function convert(params: {
             }
             sharp(join(pathToAssets, file))
                 [convertTo]()
-                .toFile(join(pathToConvertedImages, `${file.split(".")[0]}.${convertTo}`));
+                .toFile(join(pathToConvertedImages, `${file.replace(/.\w+$/g, "")}.${convertTo}`));
         });
 
         return;
