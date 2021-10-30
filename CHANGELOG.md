@@ -1,3 +1,8 @@
+### **0.0.7** (2021-10-30)  
+  
+- bump version  
+- rename image converter    
+  
 ### **0.0.6** (2021-10-30)  
   
 - bump version  
