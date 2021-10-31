@@ -1,3 +1,8 @@
+### **0.0.8** (2021-10-31)  
+  
+- bump version  
+- convert images function handle copies    
+  
 ### **0.0.7** (2021-10-30)  
   
 - bump version  
