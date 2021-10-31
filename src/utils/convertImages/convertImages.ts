@@ -1,6 +1,7 @@
 import { crawl } from "../crawl";
-import { mkdirSync, rmSync, existsSync } from "fs";
+import { mkdirSync, rmSync, existsSync, readdirSync } from "fs";
 import { convert } from "./convert";
+import { join } from "path";
 
 export function convertImages(params: {
     acceptedFileExtensions: string[];
@@ -21,20 +22,43 @@ export function convertImages(params: {
         "path": pathToAssets,
     });
 
-    if (existsSync(pathToConvertedImages)) {
-        if (!overrideIfConvertedImagesExit) {
-            throw new Error("files all ready exist");
-        }
-        rmSync(pathToConvertedImages, { "recursive": true, "force": true });
-    }
+    let path = pathToConvertedImages;
 
-    mkdirSync(pathToConvertedImages);
+    (() => {
+        if (!existsSync(pathToConvertedImages)) {
+            mkdirSync(pathToConvertedImages);
+            return;
+        }
+        if (overrideIfConvertedImagesExit) {
+            rmSync(pathToConvertedImages, { "recursive": true, "force": true });
+            mkdirSync(pathToConvertedImages);
+            return;
+        }
+
+        const newPath = path.substring(0, path.search(/\w+$/g));
+        const copies = readdirSync(newPath).filter(file => {
+            return file.search(/^convertedImage/g) !== -1;
+        });
+
+        path = join(
+            newPath,
+            `convertedImage(${(() => {
+                if (copies.length === 0) {
+                    return 0;
+                }
+
+                return copies.length;
+            })()})`,
+        );
+
+        mkdirSync(path);
+    })();
 
     convert({
         acceptedFileExtensions,
         data,
         pathToAssets,
-        pathToConvertedImages,
+        "pathToConvertedImages": path,
         convertTo,
     });
 }
