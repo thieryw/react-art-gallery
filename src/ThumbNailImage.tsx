@@ -2,14 +2,12 @@ import { makeStyles } from "./theme";
 import { memo, useState, useRef } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useImageLazyLoad } from "./utils/useImageLazyLoad";
+import type { ImageSource } from "./utils/ImageSource";
 
 export type ThumbNailImageProps = {
     className?: string;
     url: string;
-    sources?: {
-        srcSet: string;
-        type: string;
-    }[];
+    sources?: ImageSource[];
     name?: string;
     imageAverageHeight?: number;
     onClick: () => void;

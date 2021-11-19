@@ -7,11 +7,11 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { assert } from "tsafe/assert";
 import CircleLoader from "react-spinners/CircleLoader";
-import type { ThumbNailImageProps } from "./ThumbNailImage";
+import type { ImageSource } from "./utils/ImageSource";
 
 type LightBoxProps = {
     imageUrls: string[];
-    imageSources?: ThumbNailImageProps["sources"][];
+    imageSources?: ImageSource[][];
     openingImageIndex: number | undefined;
     closeLightBox: () => void;
     className?: string;
@@ -212,27 +212,13 @@ const useStyles = makeStyles<{ isDisplayed: boolean }>()((...[, { isDisplayed }]
         "top": 30,
         "right": 30,
     },
-    /*"imageWrapper": {
-        "position": "absolute",
-        "top": 0,
-        "left": 0,
-        "display": "flex",
-        "width": "100%",
-        "height": "100%",
-        "boxSizing": "border-box",
-        "gridTemplateRows": "100%",
-        "gridTemplateColumns": "100%",
-        "alignItems": "center",
-        "justifyItems": "center",
-        "zIndex": -1,
-    },*/
 }));
 
 const { LightBoxImage } = (() => {
     type LightBoxImageProps = {
         isDisplayed: boolean;
         url: string;
-        sources?: ThumbNailImageProps["sources"];
+        sources?: ImageSource[];
     };
 
     const LightBoxImage = memo((props: LightBoxImageProps) => {

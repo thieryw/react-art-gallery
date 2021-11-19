@@ -5,6 +5,7 @@ import type { ThumbNailImageProps } from "./ThumbNailImage";
 import { LightBox } from "./LightBox";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
+import { ImageSource } from "./utils/ImageSource";
 
 export type ArtGalleryProps = {
     className?: string;
@@ -13,8 +14,8 @@ export type ArtGalleryProps = {
         lightBox?: string;
     };
     thumbNailImages: Pick<ThumbNailImageProps, "name" | "url">[];
-    thumbNailImageSources?: ThumbNailImageProps["sources"][];
-    lightBoxImageSources?: ThumbNailImageProps["sources"][];
+    thumbNailImageSources?: ImageSource[][];
+    lightBoxImageSources?: ImageSource[][];
     lightBoxImages: Pick<ThumbNailImageProps, "url">[];
     imageAverageHeight?: number;
     hideImageNames?: boolean;
@@ -39,6 +40,7 @@ export const ArtGallery = memo((props: ArtGalleryProps) => {
         thumbNailImageSources,
         lightBoxImageSources,
     } = props;
+
     const [openingLightBoxImgIndex, setOpeningLightBoxImgIndex] = useState<number | undefined>(
         undefined,
     );
