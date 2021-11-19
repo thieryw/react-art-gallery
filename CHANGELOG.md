@@ -1,3 +1,8 @@
+### **0.0.9** (2021-11-19)  
+  
+- bump version  
+- added correct type for image sources    
+  
 ### **0.0.8** (2021-10-31)  
   
 - bump version  
