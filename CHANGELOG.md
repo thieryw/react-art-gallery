@@ -1,3 +1,10 @@
+### **0.0.10** (2022-09-24)  
+  
+- bump version  
+- delete image converter and import/export generator  
+- update ci  
+- update dependencies    
+  
 ### **0.0.9** (2021-11-19)  
   
 - bump version  
