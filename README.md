@@ -10,25 +10,17 @@
     <img src="https://img.shields.io/npm/dw/react-art-gallery">
     <img src="https://img.shields.io/npm/l/react-art-gallery">
 </p>
-<p align="center">
-  <a href="https://github.com/thieryw/react-art-gallery">Home</a>
-  -
-  <a href="https://github.com/thieryw/react-art-gallery">Documentation</a>
-</p>
 
-# Install / Import
+## Install
 
 ```bash
-$ npm install --save react-art-gallery
+yarn add react-art-gallery
 ```
 
-```typescript
-import { myFunction, myObject } from "update_ts_ci";
-```
+## Dev
 
-Specific imports:
-
-```typescript
-import { myFunction } from "react-art-gallery/myFunction";
-import { myObject } from "react-art-gallery/myObject";
+```bash
+git clone https://github.com/thieryw/react-art-gallery && cd react-art-gallery
+yarn yarn_link
+yarn start_vanilla
 ```
