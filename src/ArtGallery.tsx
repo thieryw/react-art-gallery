@@ -1,7 +1,6 @@
 import { memo, useState } from "react";
 import { makeStyles } from "./theme";
 import { ThumbNailImage } from "./ThumbNailImage";
-import type { ThumbNailImageProps } from "./ThumbNailImage";
 import { LightBox } from "./LightBox";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -13,39 +12,59 @@ export type ArtGalleryProps = {
         thumbNailImage?: string;
         lightBox?: string;
     };
-    thumbNailImages: Pick<ThumbNailImageProps, "name" | "url">[];
-    thumbNailImageSources?: ImageSource[][];
-    lightBoxImageSources?: ImageSource[][];
-    lightBoxImages: Pick<ThumbNailImageProps, "url">[];
+    images: {
+        thumbNail: {
+            name?: string;
+            alt?: string;
+            src: string;
+            sources?: ImageSource[];
+        };
+        lightBox: {
+            alt?: string;
+            src: string;
+            sources?: ImageSource[];
+        };
+    }[];
     imageAverageHeight?: number;
     hideImageNames?: boolean;
+    thumbNailAlinement?: "vertical" | "horizontal";
+    columnCountForVerticalAlinement?: number;
+    breakpointsForColumns?: Record<string, number>;
+    handleColumnCountAndResponsivenessYourSelf?: boolean;
 };
-
-const useStyles = makeStyles()({
-    "root": {
-        "display": "flex",
-        "flexFlow": "row wrap",
-        "boxSizing": "border-box",
-    },
-});
 
 export const ArtGallery = memo((props: ArtGalleryProps) => {
     const {
-        thumbNailImages,
         imageAverageHeight,
-        lightBoxImages,
         className,
         classes: classesProp,
         hideImageNames,
-        thumbNailImageSources,
-        lightBoxImageSources,
+        images,
+        thumbNailAlinement,
+        columnCountForVerticalAlinement,
+        breakpointsForColumns,
+        handleColumnCountAndResponsivenessYourSelf,
     } = props;
 
     const [openingLightBoxImgIndex, setOpeningLightBoxImgIndex] = useState<number | undefined>(
         undefined,
     );
 
-    const { classes, cx } = useStyles();
+    const { classes, cx } = useStyles({
+        "thumbNailAlinement": thumbNailAlinement ?? "horizontal",
+        "columnCountForVerticalAlinement":
+            columnCountForVerticalAlinement ??
+            (breakpointsForColumns === undefined ? 5 : Object.keys(breakpointsForColumns).length),
+        "breakpointsForColumns": breakpointsForColumns ?? {
+            "xl": 1980,
+            "l": 1620,
+            "m+": 1280,
+            "m": 920,
+            "s": 500,
+        },
+        "handleColumnCountAndResponsivenessYourSelf":
+            handleColumnCountAndResponsivenessYourSelf ?? false,
+    });
 
     const onClickFactory = useCallbackFactory(([index]: [number]) => {
         setOpeningLightBoxImgIndex(index);
@@ -57,24 +76,26 @@ export const ArtGallery = memo((props: ArtGalleryProps) => {
 
     return (
         <div className={cx(classes.root, className)}>
-            {thumbNailImages.map(({ url, name }, index) => (
+            {images.map(({ thumbNail }, index) => (
                 <ThumbNailImage
-                    url={url}
-                    name={name}
+                    thumbNailAlinement={thumbNailAlinement ?? "horizontal"}
+                    url={thumbNail.src}
+                    name={thumbNail.name}
                     imageAverageHeight={imageAverageHeight}
-                    key={url}
+                    key={thumbNail.src}
                     onClick={onClickFactory(index)}
                     className={classesProp?.thumbNailImage}
                     hideImageName={hideImageNames ?? false}
-                    sources={
-                        thumbNailImageSources !== undefined ? thumbNailImageSources[index] : undefined
-                    }
+                    sources={thumbNail.sources ?? undefined}
                 />
             ))}
 
             <LightBox
-                imageUrls={lightBoxImages.map(({ url }) => url)}
-                imageSources={lightBoxImageSources}
+                images={images.map(({ lightBox }) => ({
+                    "src": lightBox.src,
+                    "sources": lightBox.sources,
+                    "alt": lightBox.alt,
+                }))}
                 openingImageIndex={openingLightBoxImgIndex}
                 closeLightBox={closeLightBox}
                 className={classesProp?.lightBox}
@@ -82,3 +103,69 @@ export const ArtGallery = memo((props: ArtGalleryProps) => {
         </div>
     );
 });
+
+const useStyles = makeStyles<
+    Required<
+        Pick<
+            ArtGalleryProps,
+            | "thumbNailAlinement"
+            | "columnCountForVerticalAlinement"
+            | "breakpointsForColumns"
+            | "handleColumnCountAndResponsivenessYourSelf"
+        >
+    >
+>()(
+    (
+        ...[
+            ,
+            {
+                thumbNailAlinement,
+                columnCountForVerticalAlinement,
+                breakpointsForColumns,
+                handleColumnCountAndResponsivenessYourSelf,
+            },
+        ]
+    ) => {
+        return {
+            "root": {
+                "position": "relative",
+                ...(() => {
+                    switch (thumbNailAlinement) {
+                        case "horizontal":
+                            return {
+                                "display": "flex",
+                                "flexFlow": "row wrap",
+                            };
+                        case "vertical":
+                            return {
+                                "columnGap": 0,
+                                ...(handleColumnCountAndResponsivenessYourSelf
+                                    ? {}
+                                    : {
+                                          "columnCount": columnCountForVerticalAlinement + 1,
+                                          ...(() => {
+                                              let out = {};
+                                              const values = Object.values(breakpointsForColumns);
+                                              values.forEach((value, index) => {
+                                                  if (columnCountForVerticalAlinement - index < 1) {
+                                                      return;
+                                                  }
+                                                  out = {
+                                                      ...out,
+                                                      [`@media (max-width: ${value}px)`]: {
+                                                          "columnCount":
+                                                              columnCountForVerticalAlinement - index,
+                                                      },
+                                                  };
+                                              });
+                                              return out;
+                                          })(),
+                                      }),
+                            };
+                    }
+                })(),
+                "boxSizing": "border-box",
+            },
+        };
+    },
+);

@@ -7,15 +7,27 @@ import type { ImageSource } from "./utils/ImageSource";
 export type ThumbNailImageProps = {
     className?: string;
     url: string;
+    alt?: string;
     sources?: ImageSource[];
     name?: string;
     imageAverageHeight?: number;
     onClick: () => void;
     hideImageName: boolean;
+    thumbNailAlinement: "vertical" | "horizontal";
 };
 
 export const ThumbNailImage = memo((props: ThumbNailImageProps) => {
-    const { name, url, imageAverageHeight, onClick, className, hideImageName, sources } = props;
+    const {
+        name,
+        url,
+        imageAverageHeight,
+        onClick,
+        className,
+        hideImageName,
+        sources,
+        thumbNailAlinement,
+        alt,
+    } = props;
 
     const imageWrapperRef = useRef<HTMLDivElement>(null);
     const [isImgDimReset, setIsImgDimReset] = useState(false);
@@ -25,6 +37,11 @@ export const ThumbNailImage = memo((props: ThumbNailImageProps) => {
 
     const onLoad = useConstCallback(() => {
         if (!imageRef.current || !imageWrapperRef.current) {
+            return;
+        }
+
+        if (thumbNailAlinement === "vertical") {
+            setImageOpacity(1);
             return;
         }
 
@@ -39,6 +56,7 @@ export const ThumbNailImage = memo((props: ThumbNailImageProps) => {
         isImgDimReset,
         imageOpacity,
         imageAverageHeight,
+        thumbNailAlinement,
     });
 
     return (
@@ -53,7 +71,7 @@ export const ThumbNailImage = memo((props: ThumbNailImageProps) => {
                     className={classes.image}
                     width="300"
                     height="200"
-                    alt={name}
+                    alt={name ?? alt ?? undefined}
                 />
             </picture>
             <div onClick={onClick} className={classes.caption}>
@@ -69,22 +87,51 @@ const useStyles = makeStyles<{
     isImgDimReset: boolean;
     imageOpacity: number;
     imageAverageHeight: number | undefined;
-}>()((...[, { isImgDimReset, imageOpacity, imageAverageHeight }]) => ({
+    thumbNailAlinement: "vertical" | "horizontal";
+}>()((...[, { isImgDimReset, imageOpacity, imageAverageHeight, thumbNailAlinement }]) => ({
     "root": {
-        "margin": 3,
-        "flex": "auto",
-        "overflow": "hidden",
         "position": "relative",
+        ...(() => {
+            switch (thumbNailAlinement) {
+                case "horizontal":
+                    return {
+                        "flex": "auto",
+                        "overflow": "hidden",
+                        "margin": 3,
+                    };
+                case "vertical":
+                    return {
+                        "display": "grid",
+                        "gridTemplateRows": "1fr auto",
+                        "breakInside": "avoid",
+                        "maxWidth": "100%",
+                        "margin": "0px 3px 6px 3px",
+                    };
+            }
+        })(),
     },
     "image": {
-        "objectFit": "cover",
-        "verticalAlign": "middle",
-        "width": isImgDimReset ? "100%" : "auto",
-        "height": (() => {
-            if (isImgDimReset) {
-                return "100%";
+        ...(() => {
+            switch (thumbNailAlinement) {
+                case "horizontal":
+                    return {
+                        "width": isImgDimReset ? "100%" : "auto",
+                        "height": (() => {
+                            if (isImgDimReset) {
+                                return "100%";
+                            }
+                            return imageAverageHeight ?? "250px";
+                        })(),
+                        "objectFit": "cover",
+                        "verticalAlign": "middle",
+                    };
+                case "vertical":
+                    return {
+                        "width": "100%",
+                        "display": "block",
+                        "height": "100%",
+                    };
             }
-            return imageAverageHeight ?? "250px";
         })(),
         "transition": "opacity 300ms",
         "opacity": imageOpacity,

@@ -10,15 +10,18 @@ import CircleLoader from "react-spinners/CircleLoader";
 import type { ImageSource } from "./utils/ImageSource";
 
 type LightBoxProps = {
-    imageUrls: string[];
-    imageSources?: ImageSource[][];
+    images: {
+        src: string;
+        sources?: ImageSource[];
+        alt?: string;
+    }[];
     openingImageIndex: number | undefined;
     closeLightBox: () => void;
     className?: string;
 };
 
 export const LightBox = memo((props: LightBoxProps) => {
-    const { imageUrls, openingImageIndex, closeLightBox, className, imageSources } = props;
+    const { openingImageIndex, closeLightBox, className, images } = props;
     const [currentIndex, setCurrentIndex] = useState<number | undefined>(undefined);
     const lightBoxRef = useRef<HTMLDivElement>(null);
     const loadedImageIndexes = useMemo<number[]>(() => [], []);
@@ -49,7 +52,7 @@ export const LightBox = memo((props: LightBoxProps) => {
             (() => {
                 switch (direction) {
                     case "next":
-                        return imageUrls.length - 1;
+                        return images.length - 1;
                     case "prev":
                         return 0;
                 }
@@ -68,7 +71,7 @@ export const LightBox = memo((props: LightBoxProps) => {
                     case "next":
                         return 0;
                     case "prev":
-                        return imageUrls.length - 1;
+                        return images.length - 1;
                 }
             })();
 
@@ -142,10 +145,11 @@ export const LightBox = memo((props: LightBoxProps) => {
             />
             {loadedImageIndexes.map(imageIndex => (
                 <LightBoxImage
-                    url={imageUrls[imageIndex]}
+                    src={images[imageIndex].src}
                     isDisplayed={imageIndex === currentIndex}
                     key={imageIndex}
-                    sources={imageSources !== undefined ? imageSources[imageIndex] : undefined}
+                    sources={images[imageIndex].sources ?? undefined}
+                    alt={images[imageIndex].alt}
                 />
             ))}
             <ReactSVG
@@ -217,12 +221,13 @@ const useStyles = makeStyles<{ isDisplayed: boolean }>()((...[, { isDisplayed }]
 const { LightBoxImage } = (() => {
     type LightBoxImageProps = {
         isDisplayed: boolean;
-        url: string;
+        src: string;
+        alt?: string;
         sources?: ImageSource[];
     };
 
     const LightBoxImage = memo((props: LightBoxImageProps) => {
-        const { url, isDisplayed, sources } = props;
+        const { src, isDisplayed, sources } = props;
         const [isLoaded, setIsLoaded] = useState(false);
 
         const { classes } = useStyles({
@@ -238,7 +243,7 @@ const { LightBoxImage } = (() => {
                 <picture className={classes.picture}>
                     {sources !== undefined &&
                         sources.map((source, index) => <source {...source} key={index} />)}
-                    <img src={url} alt="lightBoxImage" onLoad={onLoad} className={classes.root} />
+                    <img src={src} alt="lightBoxImage" onLoad={onLoad} className={classes.root} />
                     <div className={classes.spinner}>
                         <CircleLoader color="white" loading={!isLoaded} />
                     </div>
