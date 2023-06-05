@@ -1,6 +1,6 @@
 {
     "name": "react-art-gallery",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "description": "",
     "repository": {
         "type": "git",
@@ -17,9 +17,9 @@
         "_format": "prettier '**/*.{ts,tsx,json,md}'",
         "format": "npm run _format -- --write",
         "format:check": "npm run _format -- --list-different",
-        "yarn_link": "yarn link && cd node_modules/react && yarn link && cd ../../src/test-vanilla && yarn link react-art-gallery && yarn link react",
-        "yarn_unlink": "cd src/test-vanilla && yarn unlink react && yarn unlink react-art-gallery && cd ../../node_modules/react && yarn unlink && cd ../../ && yarn unlink",
-        "start_vanilla": "cd src/test-vanilla && yarn start"
+        "yarn_link": "yarn link && cd node_modules/react && yarn link && cd ../../src/test/vanilla && yarn link react-art-gallery && yarn link react",
+        "yarn_unlink": "cd src/test/vanilla && yarn unlink react && yarn unlink react-art-gallery && cd ../../../node_modules/react && yarn unlink && cd ../../ && yarn unlink",
+        "start_vanilla": "cd src/test/vanilla && yarn start"
     },
     "lint-staged": {
         "*.{ts,tsx}": [
