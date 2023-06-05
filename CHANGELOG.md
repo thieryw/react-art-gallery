@@ -1,3 +1,12 @@
+### **0.0.11** (2023-06-05)  
+  
+- update tsconfig  
+- update ci  
+- update  
+- update readme  
+- update dependencies and create test project  
+- improved api and column image layout    
+  
 ### **0.0.10** (2022-09-24)  
   
 - bump version  
