@@ -32,8 +32,9 @@ export const ThumbNailImage = memo((props: ThumbNailImageProps) => {
     const imageWrapperRef = useRef<HTMLDivElement>(null);
     const [isImgDimReset, setIsImgDimReset] = useState(false);
     const [imageOpacity, setImageOpacity] = useState(0);
+    const imageRef = useRef<HTMLImageElement>(null);
 
-    const { imageRef } = useImageLazyLoad({
+    const { imageRef: pictureRef } = useImageLazyLoad({
         "imageUrl": url,
         "sources": sources?.map(({ srcSet }) => srcSet),
     });
@@ -64,12 +65,13 @@ export const ThumbNailImage = memo((props: ThumbNailImageProps) => {
 
     return (
         <div ref={imageWrapperRef} className={cx(classes.root, className)}>
-            <picture ref={imageRef}>
+            <picture ref={pictureRef}>
                 {sources !== undefined &&
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     sources.map(({ srcSet, ...rest }, index) => <source key={index} {...rest} />)}
 
                 <img
+                    ref={imageRef}
                     onLoad={onLoad}
                     className={classes.image}
                     width="300"

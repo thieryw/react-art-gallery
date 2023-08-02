@@ -27,7 +27,7 @@ export function App() {
                     };
                 })}
                 imageAverageHeight={200}
-                thumbNailAlinement="vertical"
+                thumbNailAlinement="horizontal"
                 hideImageNames={false}
             />
         </div>
