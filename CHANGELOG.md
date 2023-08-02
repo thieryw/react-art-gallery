@@ -1,3 +1,8 @@
+### **0.0.12** (2023-08-01)  
+  
+- bump version  
+- update lazyLoad hook to take image sources into acount    
+  
 ### **0.0.11** (2023-06-05)  
   
 - update tsconfig  
