@@ -1,3 +1,8 @@
+### **0.0.13** (2023-08-02)  
+  
+- bump version  
+- correct horizontal align bug    
+  
 ### **0.0.12** (2023-08-01)  
   
 - bump version  
