@@ -7,15 +7,15 @@ function loadImage(params: {
     sources?: (string | undefined)[];
 }) {
     const { imageRef, imageUrl, sources } = params;
-    if (!imageRef.current) {
+    if (imageRef.current === null) {
         return;
     }
-    imageRef.current.src = imageUrl;
+    imageRef.current.getElementsByTagName("img")[0].src = imageUrl;
     if (sources === undefined) {
         return;
     }
     sources.forEach((source, index) => {
-        if (!imageRef.current) {
+        if (imageRef.current === null) {
             return;
         }
         const sourceElement = imageRef.current.getElementsByTagName("source")[index];
@@ -48,12 +48,12 @@ export function useImageLazyLoad<
                 imageUrl,
                 sources,
             });
-
             observer.unobserve(entries[0].target);
         });
 
         observer.observe(imageRef.current);
-    }, [imageUrl]);
+        return () => observer.disconnect();
+    }, [imageUrl, sources, imageRef.current]);
 
     return { imageRef };
 }
