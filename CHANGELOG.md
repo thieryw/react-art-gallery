@@ -1,3 +1,8 @@
+### **0.0.14** (2024-09-23)  
+  
+- bump version  
+- update lazy load    
+  
 ### **0.0.13** (2023-08-02)  
   
 - bump version  
